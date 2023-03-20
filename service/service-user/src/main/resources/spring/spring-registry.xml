@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:dubbo="http://dubbo.apache.org/schema/dubbo"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://dubbo.apache.org/schema/dubbo http://dubbo.apache.org/schema/dubbo/dubbo.xsd">
+<!--注册到zookeeper-->
+    <dubbo:application name="service-user"/>
+    <!-- 连接服务注册中心zookeeper ip为zookeeper所在服务器的ip地址-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+    <!-- 注册  协议和port   端口默认是20880 -->
+    <dubbo:protocol name="dubbo" port="20883"></dubbo:protocol>
+    <!-- 扫描指定包，加入@Service注解的类会被发布为服务  -->
+    <dubbo:annotation package="com.atguigu"/>
+</beans>

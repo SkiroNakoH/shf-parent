@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mapper.RoleMapper">
+    <!--复用查询的字段-->
+    <sql id="columns">
+        id,role_name,role_code,description,create_time,update_time,is_deleted
+    </sql>
+    <select id="findAll" resultType="Role">
+        select
+        <include refid="columns"></include>
+        from acl_role
+        where is_deleted = 0
+    </select>
+
+    <select id="findPage" resultType="Role">
+        select
+        <include refid="columns"></include>
+        from acl_role
+        <where>
+            <if test="roleName != null and roleName != ''">
+                and role_name like "%"roleName"%"
+            </if>
+            and is_deleted = 0
+        </where>
+    </select>
+
+    <insert id="insert">
+        insert into acl_role(role_name,role_code,description) values (#{roleName},#{roleCode},#{description})
+    </insert>
+
+    <select id="getById" resultType="com.atguigu.entity.Role">
+        select *
+        from acl_role
+        <where>
+            id = #{id} and is_deleted = 0
+        </where>
+    </select>
+
+    <update id="update">
+        update acl_role
+        <set>
+            <if test="roleName != null and roleName != ''">
+                role_name = #{roleName},
+            </if>
+            <if test="roleCode != null and roleCode != ''">
+                role_code = #{roleCode},
+            </if>
+            <if test="description != null and description != ''">
+                description = #{description},
+            </if>
+            update_time = now()
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+    <update id="delete">
+        update acl_role
+        <set>
+            is_deleted = 1, update_time = now()
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

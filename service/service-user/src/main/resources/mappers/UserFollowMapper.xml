@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mapper.UserFollowMapper">
+    <sql id="cloumns">
+        id,user_id,house_id,create_time,update_time,is_deleted
+    </sql>
+
+    <select id="isFollow" resultType="UserFollow">
+        select <include refid="cloumns"></include>
+            from user_follow
+            <where>
+                user_id = #{userId} and house_id = #{houseId}
+            </where>
+    </select>
+
+    <insert id="insert">
+        insert into user_follow(user_id,house_id)
+        values (#{userId},#{houseId})
+    </insert>
+
+    <update id="update">
+        update user_follow
+        <set>
+            <if test="userId != null and userId != ''">
+                user_id = #{userId},
+            </if>
+            <if test="houseId != null and houseId !=''">
+                house_id = #{houseId},
+            </if>
+            is_deleted = #{isDeleted},
+            update_time = now()
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="findUserFollowVoPage" resultType="UserFollowVo">
+        select uf.id                                                                          id,
+               uf.house_id                                                                    houseId,
+               uf.create_time                                                                 createTime,
+               (select name from hse_community where id = hh.community_id and is_deleted = 0) communityName,
+               hh.name                                                                        name,
+               hh.build_area                                                                  buildArea,
+               hh.total_price                                                                 totalPrice,
+               hh.default_image_url                                                           defaultImageUrl,
+               hh.house_type_id                                                               houseTypeId,
+               hh.floor_id                                                                    floorId,
+               hh.direction_id                                                                directionId,
+               (select name from hse_dict where id = hh.house_type_id and is_deleted = 0)     houseTypeName,
+               (select name from hse_dict where id = hh.floor_id and is_deleted = 0)          floorName,
+               (select name from hse_dict where id = hh.direction_id and is_deleted = 0)      directionName
+        from user_follow uf
+                 right outer join hse_house hh
+                                  on uf.house_id = hh.id
+        where uf.user_id = #{id}
+          and uf.is_deleted = 0
+    </select>
+
+    <select id="getById" resultType="UserFollow">
+        select <include refid="cloumns"></include>
+        from user_follow
+        <where>
+            id = #{id} and is_deleted = 0
+        </where>
+    </select>
+</mapper>

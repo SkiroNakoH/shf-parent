@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.atguigu.mapper.AdminRoleMapper">
+   <select id="findRoleIdByAdminId" resultType="Long">
+     select role_id from acl_admin_role
+where admin_id = #{adminId} and is_deleted = 0
+   </select>
+
+    <delete id="deleteByAdminId">
+        delete from acl_admin_role
+        where admin_id = #{adminId}
+    </delete>
+
+    <insert id="insert">
+        insert into acl_admin_role(role_id, admin_id)
+        values (#{roleId}, #{adminId})
+    </insert>
+
+    <select id="findPermissionListByAdminId" resultType="Permission">
+        select id,
+               parent_id,
+               name,
+               url,
+               code,
+               type,
+               sort,
+               create_time,
+               update_time,
+               is_deleted
+        from acl_permission
+        where id in (select arp.permission_id
+                     from acl_role_permission arp
+                              left outer join acl_admin_role aar
+                                              on arp.role_id = aar.role_id
+                     where aar.admin_id = #{adminId}
+                       and aar.is_deleted = 0
+                       and arp.is_deleted = 0)
+    </select>
+</mapper>
